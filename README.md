@@ -19,9 +19,9 @@
 	
 3. List countries in the southeastern hemisphere
 	It's quite a tricky question, the answer can be really different depending on how one defines "southeastern hemisphere". In my opinion, I use the equator to separate south/north hemisphere, and eastern hemisphere is east of the Prime Meridian and west of 180 degrees in longitude. Thus, I use the coordinates information of each country to decide whether they are in southeastern hemisphere or not. This piece of information will be parsed during the second loop of getting each country's region. For countries such as France that has more than more coordinates, I simply pick the first one and load into local database. Function parse_hemisphere will print out southeastern countries with coordinates, also the total number of qualified countries.
+```ruby
 	Results: 
-```	Angola: 12 30 S, 18 30 E
-```
+	Angola: 12 30 S, 18 30 E
 	Antarctica: 90 00 S, 0 00 E
 	Ashmore and Cartier Islands: 12 14 S, 123 05 E
 	Australia: 27 00 S, 133 00 E
@@ -62,10 +62,12 @@
 	Zimbabwe: 20 00 S, 30 00 E
 	
 	in Total: 39 countries
-	
+```
+
 4. List countries in asia with more than 10 political parties
 	Similar algorithm in elevation part is implemented here. At first, in order to count number of parties under "Political parties" label, I store every table data with "div.category_data" label in an array, then use array.length to get the number of parties. However, this seems not good enough for places such as Hong Kong, where error counts happen. Thus, I introduce in a length parameter to distinguish words such as "note"/whitespace with party information. Also, for countries like Albania, I think alliance of party also plays an important part in the political world, and it additionally counts as one party. Nevertheless, this program is not intelligent enough to identify number within each line, for example "eight other parties" under current algorithm yield only one count.
 	Comment: special case for India, on text format page, india has 18 political parties, but on https://www.cia.gov/library/publications/the-world-factbook/fields/2118.html, it shows 21. I use the text version as standard input. Similar cases happen in Macau, Kazakhstan etc.
+```ruby	
 	Result:
 	Hong Kong has 16 political parties.
 	India has 18 political parties.
@@ -76,20 +78,23 @@
 	Nepal has 36 political parties.
 	Pakistan has 22 political parties.
 	Thailand has 11 political parties.
-	
+```
+
 5. List the top 5 countries that have the largest electricity consumption per capital
 	Population information is parsed during region specification, but for electricity consumption, this webpage https://www.cia.gov/library/publications/the-world-factbook/rankorder/2233rank.html gives a figure in full amount, without "billion"/"million", which is much easier to use. In parse_elec funtion, I use hash_elec and hash_popu to calculate electricity consumption per capita, the top five countries are listed as follows. 
+```ruby
 	Result:
 	Iceland 			51477.88797929466
 	Liechtenstein		36747.81809830041
 	Norway				25599.757426946995
 	Kuwait				17330.064452553986
 	Finland				16108.652414284992
-	
+```	
 6. List countries along with their dominant religion(if above 80%) or all religion(if max below 50%)
 	This webpage is really helpful when conducting the task: https://www.cia.gov/library/publications/the-world-factbook/fields/2122.html.
 	Algorithm is similar to that of the 5th task, difference is that this task requires a bunch of condition checks, such as whether contents contain percentiles, or just simply description like "predominant". Also, to make the output clear, condition check such as whether contents has a comma as slice tail indicator needs to be confirmed. Details are more of concern, since the percentile could be either "80.1%" or "80%" in format, thus when I try to match the digit, a precise and reasonable regex is confirmed couple of times to make sure it works. Last, the year information is remained because sometimes time indeed makes difference.
-	
+
+```ruby	
 	Result(in alphabetical order):
 	    Afghanistan  Sunni Muslim 80%
 	    Algeria  Muslim (official; predominantly Sunni) 99%, other (includes Christian and Jewish)
@@ -254,9 +259,11 @@
 	    World  Christian 33.39% (of which Roman Catholic 16.85%, Protestant 6.15%, Orthodox 3.96%, Anglican 1.26%), Muslim 22.74%, Hindu 13.8%, Buddhist 6.77%, Sikh 0.35%, Jewish 0.22%, Baha'i 0.11%, other religions 10.95%, non-religious 9.66%, atheists 2.01% (2010 est.)
 	    Yemen  Muslim 99.1% (official; virtually all are citizens
 	    Zimbabwe  syncretic (part Christian, part indigenous beliefs) 50%, Christian 25%, indigenous beliefs 24%, Muslim and other 1%
+```
 	
 7. List any country that is entirely landlocked by another country
 	Based on the definition of landlocked country, I first check coastline information listed on page https://www.cia.gov/library/publications/the-world-factbook/fields/2060.html. It will show whether a country has coastline. If not, landlock will appear, if so, distance will appear. After picking countries with "landlock" label, I make a second search on page https://www.cia.gov/library/publications/the-world-factbook/fields/2096.html, which provides detail information about land boundaries, thus adjacent countries could be found. My strategy is try to get the essential information at one time, then process most of data offline. To check accuracy, I first output landlocked country with number of adjacent countries, and it turns out pretty good. Some of results are here:
+```ruby
 	Afghanistan, number of adjacent:6
 	Andorra, number of adjacent:2
 	Armenia, number of adjacent:4
@@ -274,20 +281,23 @@
 	Ethiopia, number of adjacent:6
 	Holy See (Vatican City), number of adjacent:1
 	Holy See (Vatican City) Entirely landlocked: Italy
-	
+```	
 	Then I'm certain this algorithm works, and carry on to find landlocked countries with only one adjacent country.
+
+```ruby
 	Result:
 	Holy See (Vatican City) Entirely landlocked by: Italy
 	Lesotho Entirely landlocked by: South Africa
 	San Marino Entirely landlocked by: Italy
 	
 	Three countries suffice this requirement.
-	
+```	
 
 	
 8. (Wild Card) List the top 5 countries that have the largest percentage of internet users. 
 	I try to come up with a question that is at a similar level of Q5, using the figure of population and internet users in each country. Both information are parsed during the first round of parsing through each page. Calculation and sorting is done in function parse_internet. It's interesting to find out that there are actually countires/regions don't have internet users, and that Iceland and Norway(in Northern Europe) have the largest percentage in internet users.
-	
+
+```ruby	
 	Results:
 	American Samoa has no internet users.
 	Curacao has no internet users.
@@ -297,7 +307,7 @@
 	Falkland Islands (Islas Malvinas): 92.36%
 	Sweden: 92.09%
 	Niue: 89.5%
-	
+```	
 	After doing all these, a weird idea just come up to me that, what's the possible relationship between electricity consumption per capital and internet user percentage? Since the two sections of data are somehow "normalized" by dividing population, I really want to see if there's any relationship between. Also, I would like to try drawing a cross section 2D scatter plot in ruby. I found a gem called nyaplot, and try to use it to draw a scatter plot and visualize data. Simply type gem install nyaplot will install this gem to pc. 
 	To use nyaplot to draw scatter plot, first define two array plot_x, plot_y, then type the following scripts.
     
@@ -316,6 +326,7 @@
 > Then, I manage to map all the coordinates information into a 180*360 dimension matrix (in array form). Thus each node of the matrix will contain the counts of different coordinates(some node may contain more than 1 count). The next step is to sum up every 10 * 10 matrices within the matrix and store the sum value in the position of [0,0] in each 10*10 small matrix. 
 > Simply using array.each_with_index.max, I could find the largest value/count, then trace back to its boundary coordinates in longitude and latitude. Finally, the program will output the maximum number of countries found, along with each country within the boundary and its coordinates.
 
+```ruby
 	 Results:
 	 Longitude: 70 W ~ 60 W;  Latitude: 8 N ~ 18 N
 	 $$$$$$$$$$$$$$$$$$$$$$$$$$$$
@@ -341,8 +352,10 @@
 	 Trinidad and Tobago at [-61, 11]
 	 Venezuela at [-66, 8]
 	 Virgin Islands at [-65, 18]
-	 
+```	 
 	 One thing to make certain is that for degree between 170 E and 170 W, there are scarecely any countries found, and that's somehow why the international date line is there. Using the program written, by modifying the value of lon_lowlmt, lon_uplmt, lat_lowlmt and lat_uplmt, you can list every country within the boundary you set.
+
+```ruby
 	 Longitude: 170 E ~ 180 E;  Latitude: 90 S ~ 90 N
 	 Max number of countries: 4.
 	 Fiji at [175, -18]
@@ -361,7 +374,8 @@
 	 Tokelau at [-172, -9]
 	 Tonga at [-175, -20]
 	 Wallis and Futuna at [-177, -14]
-	 
+```
+
 	 Thus, the number of all countries within 170E ~ 170W (90S ~ 90N) is 13, far smaller than the maximum count we find above between Longitude: 70 W ~ 60 W;  Latitude: 8 N ~ 18 N. Therefore, the algorithm generates a thorough result.
 	
 	
@@ -370,7 +384,8 @@
 Q: how to parse information from *.swf embedded in the html page?
 	A: After some time googling this topic, I figure out a way to get contents of *.swf file embedded in html quickly. I use firebug in Firefox to view source info and monitor interaction between browser and website, nokogiri gem and Ruby language is used to parse information from XML file. The following steps might seem a little bit tricky, but it definitely works.
 	First let's say open the webpage https://www.cia.gov/library/publications/the-world-factbook/wfbExt/region_afr.html, which lists every country in Africa within the "annoying" flash. Then, let's enable firebug, open Net monitor, and look through the list that contains every file you've cached to load the html page. Under "all" catelogue, you should see a bunch of jpg, js, xml etc., also you should see GET afr.swf. The flash file is 176.3 kb, it's mapping the region information and country name in visual form. Let's look further, right click the link and choose open in a new tab, a new webpage of https://www.cia.gov/library/publications/the-world-factbook/wfbExt/afr.swf will occur. Now we continue to use firebug to check what file the browser is currently using, and under HTML catalogue we could definitely find GET sourceXML.xml. That's the exact thing connected to afr.swf, and is also the central mapping bank for all region flash files. Right click on the link to open in a new tab, then we have a clear list of Country Name, mapping url(abbr.), and region specification as follows.
-	
+
+```XML	
 	<country>
 		<country name="Afghanistan" fips="AF" Region="South Asia"/>
 		<country name="Akrotiri" fips="AX" Region="Europe"/>
@@ -394,11 +409,12 @@ Q: how to parse information from *.swf embedded in the html page?
 		<country name="Baker Island" fips="FQ" Region="Oceania"/>
 		<country name="Bangladesh" fips="BG" Region="South Asia"/>
 		...
+```
 
 	If you look through each country's webpage url, take Afghanistan as an example, you'll find that for normal version we have https://www.cia.gov/library/publications/the-world-factbook/geos/af.html, for text version we have https://www.cia.gov/library/publications/the-world-factbook/geos/countrytemplate_af.html. They are all formatted in a similar fashion, with prefix + abbreviation, and a command in ruby will do the rest. Therefore, this xml file will provide essential mapping of country/region/url. This is the xml file link: https://www.cia.gov/library/publications/the-world-factbook/wfbExt/sourceXML.xml
 	My next move is to combine this into my program at the beginning, using ruby with nokogiri to parse the region information and compare it with the mapping I get from "Map reference label" page by page. I wrote two methods (parse_xml and compare_xml) to first get mapping information from XML file using nokogiri and ruby, then use xml file as a standard reference to check the accuracy of region info defined by map reference.
 	The results are as follows.(Here only unmatched definition is listed)
-
+```ruby
 	Afghanistan: Asia => South Asia
 	Anguilla: Central America and the Caribbean => Central America
 	Antarctica: Antarctic Region => Antarctica
@@ -482,4 +498,5 @@ Q: how to parse information from *.swf embedded in the html page?
 	Virgin Islands: Central America and the Caribbean => Central America
 	
 	In total 82 mistaches are found, other 185 regions are correct
+```
 	It turns out that using the xml to parse region and url information use just 0.29s, however, going through every country's home page will take more than 50 seconds. Finding appropriate reference source is indeed helpful :) The XML contains more accurate region information.
