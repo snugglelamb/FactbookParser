@@ -19,7 +19,7 @@
 	
 3. List countries in the southeastern hemisphere
 	It's quite a tricky question, the answer can be really different depending on how one defines "southeastern hemisphere". In my opinion, I use the equator to separate south/north hemisphere, and eastern hemisphere is east of the Prime Meridian and west of 180 degrees in longitude. Thus, I use the coordinates information of each country to decide whether they are in southeastern hemisphere or not. This piece of information will be parsed during the second loop of getting each country's region. For countries such as France that has more than more coordinates, I simply pick the first one and load into local database. Function parse_hemisphere will print out southeastern countries with coordinates, also the total number of qualified countries.
-```ruby
+```HTML
 	Results: 
 	Angola: 12 30 S, 18 30 E
 	Antarctica: 90 00 S, 0 00 E
@@ -67,7 +67,7 @@
 4. List countries in asia with more than 10 political parties
 	Similar algorithm in elevation part is implemented here. At first, in order to count number of parties under "Political parties" label, I store every table data with "div.category_data" label in an array, then use array.length to get the number of parties. However, this seems not good enough for places such as Hong Kong, where error counts happen. Thus, I introduce in a length parameter to distinguish words such as "note"/whitespace with party information. Also, for countries like Albania, I think alliance of party also plays an important part in the political world, and it additionally counts as one party. Nevertheless, this program is not intelligent enough to identify number within each line, for example "eight other parties" under current algorithm yield only one count.
 	Comment: special case for India, on text format page, india has 18 political parties, but on https://www.cia.gov/library/publications/the-world-factbook/fields/2118.html, it shows 21. I use the text version as standard input. Similar cases happen in Macau, Kazakhstan etc.
-```ruby	
+```HTML	
 	Result:
 	Hong Kong has 16 political parties.
 	India has 18 political parties.
@@ -82,7 +82,7 @@
 
 5. List the top 5 countries that have the largest electricity consumption per capital
 	Population information is parsed during region specification, but for electricity consumption, this webpage https://www.cia.gov/library/publications/the-world-factbook/rankorder/2233rank.html gives a figure in full amount, without "billion"/"million", which is much easier to use. In parse_elec funtion, I use hash_elec and hash_popu to calculate electricity consumption per capita, the top five countries are listed as follows. 
-```ruby
+```HTML
 	Result:
 	Iceland 			51477.88797929466
 	Liechtenstein		36747.81809830041
@@ -94,7 +94,7 @@
 	This webpage is really helpful when conducting the task: https://www.cia.gov/library/publications/the-world-factbook/fields/2122.html.
 	Algorithm is similar to that of the 5th task, difference is that this task requires a bunch of condition checks, such as whether contents contain percentiles, or just simply description like "predominant". Also, to make the output clear, condition check such as whether contents has a comma as slice tail indicator needs to be confirmed. Details are more of concern, since the percentile could be either "80.1%" or "80%" in format, thus when I try to match the digit, a precise and reasonable regex is confirmed couple of times to make sure it works. Last, the year information is remained because sometimes time indeed makes difference.
 
-```ruby	
+```HTML	
 	Result(in alphabetical order):
 	    Afghanistan  Sunni Muslim 80%
 	    Algeria  Muslim (official; predominantly Sunni) 99%, other (includes Christian and Jewish)
@@ -263,7 +263,7 @@
 	
 7. List any country that is entirely landlocked by another country
 	Based on the definition of landlocked country, I first check coastline information listed on page https://www.cia.gov/library/publications/the-world-factbook/fields/2060.html. It will show whether a country has coastline. If not, landlock will appear, if so, distance will appear. After picking countries with "landlock" label, I make a second search on page https://www.cia.gov/library/publications/the-world-factbook/fields/2096.html, which provides detail information about land boundaries, thus adjacent countries could be found. My strategy is try to get the essential information at one time, then process most of data offline. To check accuracy, I first output landlocked country with number of adjacent countries, and it turns out pretty good. Some of results are here:
-```ruby
+```HTML
 	Afghanistan, number of adjacent:6
 	Andorra, number of adjacent:2
 	Armenia, number of adjacent:4
@@ -284,7 +284,7 @@
 ```	
 	Then I'm certain this algorithm works, and carry on to find landlocked countries with only one adjacent country.
 
-```ruby
+```HTML
 	Result:
 	Holy See (Vatican City) Entirely landlocked by: Italy
 	Lesotho Entirely landlocked by: South Africa
@@ -297,7 +297,7 @@
 8. (Wild Card) List the top 5 countries that have the largest percentage of internet users. 
 	I try to come up with a question that is at a similar level of Q5, using the figure of population and internet users in each country. Both information are parsed during the first round of parsing through each page. Calculation and sorting is done in function parse_internet. It's interesting to find out that there are actually countires/regions don't have internet users, and that Iceland and Norway(in Northern Europe) have the largest percentage in internet users.
 
-```ruby	
+```HTML	
 	Results:
 	American Samoa has no internet users.
 	Curacao has no internet users.
@@ -326,7 +326,7 @@
 > Then, I manage to map all the coordinates information into a 180*360 dimension matrix (in array form). Thus each node of the matrix will contain the counts of different coordinates(some node may contain more than 1 count). The next step is to sum up every 10 * 10 matrices within the matrix and store the sum value in the position of [0,0] in each 10*10 small matrix. 
 > Simply using array.each_with_index.max, I could find the largest value/count, then trace back to its boundary coordinates in longitude and latitude. Finally, the program will output the maximum number of countries found, along with each country within the boundary and its coordinates.
 
-```ruby
+```HTML
 	 Results:
 	 Longitude: 70 W ~ 60 W;  Latitude: 8 N ~ 18 N
 	 $$$$$$$$$$$$$$$$$$$$$$$$$$$$
@@ -355,7 +355,7 @@
 ```	 
 	 One thing to make certain is that for degree between 170 E and 170 W, there are scarecely any countries found, and that's somehow why the international date line is there. Using the program written, by modifying the value of lon_lowlmt, lon_uplmt, lat_lowlmt and lat_uplmt, you can list every country within the boundary you set.
 
-```ruby
+```HTML
 	 Longitude: 170 E ~ 180 E;  Latitude: 90 S ~ 90 N
 	 Max number of countries: 4.
 	 Fiji at [175, -18]
@@ -414,7 +414,7 @@ Q: how to parse information from *.swf embedded in the html page?
 	If you look through each country's webpage url, take Afghanistan as an example, you'll find that for normal version we have https://www.cia.gov/library/publications/the-world-factbook/geos/af.html, for text version we have https://www.cia.gov/library/publications/the-world-factbook/geos/countrytemplate_af.html. They are all formatted in a similar fashion, with prefix + abbreviation, and a command in ruby will do the rest. Therefore, this xml file will provide essential mapping of country/region/url. This is the xml file link: https://www.cia.gov/library/publications/the-world-factbook/wfbExt/sourceXML.xml
 	My next move is to combine this into my program at the beginning, using ruby with nokogiri to parse the region information and compare it with the mapping I get from "Map reference label" page by page. I wrote two methods (parse_xml and compare_xml) to first get mapping information from XML file using nokogiri and ruby, then use xml file as a standard reference to check the accuracy of region info defined by map reference.
 	The results are as follows.(Here only unmatched definition is listed)
-```ruby
+```HTML
 	Afghanistan: Asia => South Asia
 	Anguilla: Central America and the Caribbean => Central America
 	Antarctica: Antarctic Region => Antarctica
