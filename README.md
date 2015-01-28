@@ -1,33 +1,27 @@
-CIT 597 HW2 Readme
-Zhi Li | 44005290 | zhili@seas.upenn.edu
-
-Part I
-	After going through all my codes in python, C, C++, I chose to convert a C program called magicsquare to Ruby, since the others are either too short or related to GUI programming and regression analysis on Matrix. You could find the C program under the same repository. The main purpose of this program in C is implement a "random solution" to solve n*n magic square, which has the same sum in column, row and diagonal, by taking full advantage of double pointers. Briefly, first it generate an n*n square filled with numbers in 1..n*n, prints it out, judge whether it's a magic square, and permute it until a solution comes out. It also contains several for loops and while loops, which I'm perfectly sure that a functional way in ruby will look much more elegant.
-	It did take me some time to try and think in a ruby way, try more functional programming instead of throwing several loops to do it. In comparison, the initial part becomes much easier in ruby since we could generate a 2D array with unique random numbers simply by reshaping a 1D one, but in C it takes several loops to first make sure numbers are unique then assign value to each element in array. Also, there are more degrees of freedom in Ruby, each function are more concise and easier to read. What surprise me the most is that only one line of script is in need for isMagic function. In a nutshell, I like this language.
-	
-	You could find the new program naming c2ruby.rb
-	
-		
-Part II
+##CIT 597 WebParser
+	Zhi Li 
 	Gem used: Nokogiri, nyaplot(for drawing scatter plot)
-	Program file: webcrawling.rb hw2_EC.rb
-	
+	Program file: factbook.rb hw2_EC.rb
+	Test with RSpec: factbook_spec.rb
 
-	Algorithm used and answers to each question(followed in each section)
-	Generally, in order not to rapidly access CIA website, I try to manage some of the calculation offline by first getting essential information all at a time page by page. From /print/textversion.html, I manage to create a mapping between country name and corresponding urls in hash_country. Then everytime I look for information regarding specific countries, I could always go through this hash to find out the exact urls. Using the url mapping, I manage to go through every country's page and locate the region/population/coordinates information, then store the mapping information in hashes for further use. Take region as an example, the algorithm used is quite direct, when I go through every page, first locate label "Map references", then go to the next element(upper parent's) to get the region information. More general information could also be fetch in this process, just few lines of code will suffice. 
+### Algorithm Used
+> Algorithm used and answers to each task(followed in each section)
+
+> Generally, in order not to rapidly access CIA website, I try to manage some of the calculation offline by first getting essential information all at a time page by page. From /print/textversion.html, I manage to create a mapping between country name and corresponding urls in hash_country. Then everytime I look for information regarding specific countries, I could always go through this hash to find out the exact urls. Using the url mapping, I manage to go through every country's page and locate the region/population/coordinates information, then store the mapping information in hashes for further use. Take region as an example, the algorithm used is quite direct, when I go through every page, first locate label "Map references", then go to the next element(upper parent's) to get the region information. More general information could also be fetch in this process, just few lines of code will suffice. 
 	
-	1. List countries in South America that are prone to earthquakes.
+1. List countries in South America that are prone to earthquakes.
 	I try to first get the list of countries within south america by region, then get the reflinks of each country. However, it seems that CIA is using flash and I could not simply get each country's url. However, using the two hashes created, I could cross reference region, hash_country to look for corresponding url and parse information related to earthquake. The program could detect "earthquake" keyword, print out the related paragraph, and give related country a T/F label.
 	Results are given as follows(countries prone to earthquakes): Argentina, Chile, Colombia, Ecuador, Peru.
 	
-	2. List the country in Europe with the lowest elevation
+2. List the country in Europe with the lowest elevation
 	First, get country list in Europe with url. Then, there are two ways to do this. One is use https://www.cia.gov/library/publications/the-world-factbook/fields/2020.html, which contains all the elevation information within. Another is find elevation information within each country's page. I choose the latter one, and use similar locating method as hash_region is established.(First find elevation label, then find the next element) .match() method in regex is used to strim the number value out, which is stored in hash_elevation with country name and related lowest elevation.
 	Results: European Union, Netherlands, Denmark have the lowest elevation of -7 m.
 	
-	3. List countries in the southeastern hemisphere
+3. List countries in the southeastern hemisphere
 	It's quite a tricky question, the answer can be really different depending on how one defines "southeastern hemisphere". In my opinion, I use the equator to separate south/north hemisphere, and eastern hemisphere is east of the Prime Meridian and west of 180 degrees in longitude. Thus, I use the coordinates information of each country to decide whether they are in southeastern hemisphere or not. This piece of information will be parsed during the second loop of getting each country's region. For countries such as France that has more than more coordinates, I simply pick the first one and load into local database. Function parse_hemisphere will print out southeastern countries with coordinates, also the total number of qualified countries.
 	Results: 
-	Angola: 12 30 S, 18 30 E
+```	Angola: 12 30 S, 18 30 E
+```
 	Antarctica: 90 00 S, 0 00 E
 	Ashmore and Cartier Islands: 12 14 S, 123 05 E
 	Australia: 27 00 S, 133 00 E
@@ -69,7 +63,7 @@ Part II
 	
 	in Total: 39 countries
 	
-	4. List countries in asia with more than 10 political parties
+4. List countries in asia with more than 10 political parties
 	Similar algorithm in elevation part is implemented here. At first, in order to count number of parties under "Political parties" label, I store every table data with "div.category_data" label in an array, then use array.length to get the number of parties. However, this seems not good enough for places such as Hong Kong, where error counts happen. Thus, I introduce in a length parameter to distinguish words such as "note"/whitespace with party information. Also, for countries like Albania, I think alliance of party also plays an important part in the political world, and it additionally counts as one party. Nevertheless, this program is not intelligent enough to identify number within each line, for example "eight other parties" under current algorithm yield only one count.
 	Comment: special case for India, on text format page, india has 18 political parties, but on https://www.cia.gov/library/publications/the-world-factbook/fields/2118.html, it shows 21. I use the text version as standard input. Similar cases happen in Macau, Kazakhstan etc.
 	Result:
@@ -83,7 +77,7 @@ Part II
 	Pakistan has 22 political parties.
 	Thailand has 11 political parties.
 	
-	5. List the top 5 countries that have the largest electricity consumption per capital
+5. List the top 5 countries that have the largest electricity consumption per capital
 	Population information is parsed during region specification, but for electricity consumption, this webpage https://www.cia.gov/library/publications/the-world-factbook/rankorder/2233rank.html gives a figure in full amount, without "billion"/"million", which is much easier to use. In parse_elec funtion, I use hash_elec and hash_popu to calculate electricity consumption per capita, the top five countries are listed as follows. 
 	Result:
 	Iceland 			51477.88797929466
@@ -92,176 +86,176 @@ Part II
 	Kuwait				17330.064452553986
 	Finland				16108.652414284992
 	
-	6. List countries along with their dominant religion(if above 80%) or all religion(if max below 50%)
+6. List countries along with their dominant religion(if above 80%) or all religion(if max below 50%)
 	This webpage is really helpful when conducting the task: https://www.cia.gov/library/publications/the-world-factbook/fields/2122.html.
 	Algorithm is similar to that of the 5th task, difference is that this task requires a bunch of condition checks, such as whether contents contain percentiles, or just simply description like "predominant". Also, to make the output clear, condition check such as whether contents has a comma as slice tail indicator needs to be confirmed. Details are more of concern, since the percentile could be either "80.1%" or "80%" in format, thus when I try to match the digit, a precise and reasonable regex is confirmed couple of times to make sure it works. Last, the year information is remained because sometimes time indeed makes difference.
 	
 	Result(in alphabetical order):
-    Afghanistan  Sunni Muslim 80%
-    Algeria  Muslim (official; predominantly Sunni) 99%, other (includes Christian and Jewish)
-    American Samoa  Christian Congregationalist 50%, Roman Catholic 20%, Protestant and other 30%
-    Andorra  Roman Catholic (predominant)
-    Angola  indigenous beliefs 47%, Roman Catholic 38%, Protestant 15% (1998 est.)
-    Anguilla  Protestant 83.1% (Anglican 29%
-    Argentina  nominally Roman Catholic 92% (less than 20% practicing)
-    Armenia  Armenian Apostolic 92.6%
-    Australia  Protestant 28.8% (Anglican 17.1%, Uniting Church 5.0%, Presbyterian and Reformed 2.8%, Baptist, 1.6%, Lutheran 1.2%, Pentecostal 1.1%), Catholic 25.3%, Eastern Orthodox 2.6%, other Christian 4.5%, Buddhist 2.5%, Muslim 2.2%, Hindu 1.3%, other 8.4%, unspecified 2.2%, none 22.3%
-    Azerbaijan  Muslim 93.4%
-    Bangladesh  Muslim 89.5%
-    Belarus  Eastern Orthodox 80%
-    Belize  Roman Catholic 39.3%, Pentacostal 8.3%, Seventh Day Adventist 5.3%, Anglican 4.5%, Mennonite 3.7%, Baptist 3.5%, Methodist 2.8%, Nazarene 2.8%, Jehovah's Witnesses 1.6%, other 9.9% (includes Baha'i Faith, Buddhism, Hinduism, Islam, and Mormon), other (unknown) 3.1%, none 15.2% (2010 census)
-    Benin  Catholic 27.1%, Muslim 24.4%, Vodoun 17.3%, Protestant 10.4% (Celestial 5%, Methodist 3.2%, other Protestant 2.2%), other Christian 5.3%, other 15.5% (2002 census)
-    Bermuda  Protestant 46.1% (Anglican 15.8%, African Methodist Episcopal 8.6%, Seventh Day Adventist 6.7, Pentecostal 3.5%, Methodist 2.7%, Presbyterian 2.0 %, Church of God 1.6%, Baptist 1.2%, Salvation Army 1.1%, Bretheren 1.0%, other Protestant 2.0%), Roman Catholic 14.5%, Jehovah's Witness 1.3%, other Christian 9.1%, Muslim 1%, other 3.9%, none 17.8%, unspecified 6.2% (2010 est.)
-    Bolivia  Roman Catholic 95%
-    Bosnia and Herzegovina  Muslim 40%, Orthodox 31%, Roman Catholic 15%, other 14%
-    British Virgin Islands  Protestant 84% (Methodist 33%
-    Burma  Buddhist 89%
-    Cambodia  Buddhist (official) 96.9%
-    Cameroon  indigenous beliefs 40%, Christian 40%, Muslim 20%
-    Canada  Catholic 40.6% (includes Roman Catholic 38.8%, Orthodox 1.6%, other Catholic .2%), Protestant 20.3% (includes United Church 6.1%, Anglican 5%, Baptist 1.9%, Lutheran 1.5%, Pentecostal 1.5%, Presbyterian 1.4%, other Protestant 2.9%), other Christian 6.3%, Muslim 3.2%, Hindu 1.5%, Sikh 1.4%, Buddhist 1.1%, Jewish 1%, other 0.6%, none 23.9% (2011 est.)
-    Central African Republic  indigenous beliefs 35%, Protestant 25%, Roman Catholic 25%, Muslim 15%
-    China  Buddhist 18.2%, Christian 5.1%, Muslim 1.8%, folk religion 21.9%, Hindu
-    Christmas Island  Buddhist 36%, Muslim 25%, Christian 18%, other 21% (1997)
-    Cocos (Keeling) Islands  Sunni Muslim 80%
-    Colombia  Roman Catholic 90%
-    Comoros  Sunni Muslim 98%
-    Congo, Democratic Republic of the  Roman Catholic 50%, Protestant 20%, Kimbanguist 10%, Muslim 10%, other (includes syncretic sects and indigenous beliefs) 10%
-    Congo, Republic of the  Roman Catholic 33.1%, Awakening Churches/Christian Revival 22.3%, Protestant 19.9%, Salutiste 2.2%, Muslim 1.6%, Kimbanguiste 1.5%, other 8.1%, none 11.3% (2010 est.)
-    Cote d'Ivoire  Muslim 38.6%, Christian 32.8%, indigenous 11.9%, none 16.7% (2008 est.)
-    Croatia  Roman Catholic 86.3%
-    Cuba  nominally Roman Catholic 85%
-    Czech Republic  Roman Catholic 10.4%, Protestant (includes Czech Brethren and Hussite) 1.1%, other and unspecified 54%, none 34.5% (2011 est.)
-    Denmark  Evangelical Lutheran (official) 80%
-    Djibouti  Muslim 94%
-    Dominican Republic  Roman Catholic 95%
-    Ecuador  Roman Catholic 95%
-    Egypt  Muslim (predominantly Sunni) 90%, Christian (majority Coptic Orthodox, other Christians include Armenian Apostolic, Catholic, Maronite, Orthodox, and Anglican) 10% (2012 est.)
-    Equatorial Guinea  nominally Christian and predominantly Roman Catholic, pagan practices
-    Eritrea;  Unclear
-    Estonia  Lutheran 9.9%, Orthodox 16.2%, other Christian (including Methodist, Seventh-Day Adventist, Roman Catholic, Pentecostal) 2.2%, other 0.9%, none 54.1%, unspecified 16.7% (2011 est.)
-    Ethiopia  Ethiopian Orthodox 43.5%, Muslim 33.9%, Protestant 18.5%, traditional 2.7%, Catholic 0.7%, other 0.6% (2007 est.)
-    European Union;  Unclear
-    Faroe Islands  Evangelical Lutheran 83.8%
-    Fiji  Protestant 45% (Methodist 34.6%, Assembly of God 5.7%, Seventh Day Adventist 3.9%, and Anglican 0.8%), Hindu 27.9%, other Christian 10.4%, Roman Catholic 9.1%, Muslim 6.3%, Sikh 0.3%, other 0.3%, none 0.8% (2007 est.)
-    France  Roman Catholic 83%-88%
-    Gambia, The  Muslim 90%
-    Gaza Strip  Muslim 98.0 - 99.0% (predominantly Sunni), Christian               note: dismantlement of Israeli settlements was completed in September 2005; Gaza has had no Jewish population since then (2012 est.)
-    Georgia  Orthodox Christian (official) 83.9%
-    Germany  Protestant 34%, Roman Catholic 34%, Muslim 3.7%, unaffiliated or other 28.3%
-    Greece  Greek Orthodox (official) 98%
-    Greenland;  Unclear
-    Guam  Roman Catholic 85%
-    Guatemala;  Unclear
-    Guernsey;  Unclear
-    Guinea  Muslim 85%
-    Guinea-Bissau  Muslim 50%, indigenous beliefs 40%, Christian 10%
-    Guyana  Protestant 30.5% (Pentecostal 16.9%, Anglican 6.9%, Seventh Day Adventist 5%, Methodist 1.7%), Hindu 28.4%, Roman Catholic 8.1%, Muslim 7.2%, Jehovah's Witnesses 1.1%, other Christian 17.7%, other 1.9%, none 4.3%, unspecified 0.9% (2002 est.)
-    Haiti  Roman Catholic 80%
-    Holy See (Vatican City);  Unclear
-    Honduras  Roman Catholic 97%
-    Hong Kong  eclectic mixture of local religions 90%
-    Hungary  Roman Catholic 37.2%, Calvinist 11.6%, Lutheran 2.2%, Greek Catholic 1.8%, other 1.9%, none 18.2%, unspecified 27.2% (2011 est.)
-    India  Hindu 80.5%
-    Indonesia  Muslim 87.2%
-    Iran  Muslim (official) 99.4% (Shia 90-95%
-    Iraq  Muslim (official) 99% (Shia 60%-65%
-    Ireland  Roman Catholic 84.7%
-    Isle of Man;  Unclear
-    Italy  Christian 80% (overwhelmingly Roman Catholic with very small groups of Jehovah's Witnesses and Protestants)
-    Japan  Shintoism 83.9%
-    Jersey;  Unclear
-    Jordan  Muslim 97.2% (official; predominantly Sunni), Christian 2.2% (majority Greek Orthodox, but some Greek and Roman Catholics, Syrian Orthodox, Coptic Orthodox, Armenian Orthodox, and Protestant denominations), Buddhist 0.4%, Hindu 0.1%, Jewish
-    Kenya  Christian 82.5% (Protestant 47.4%
-    Korea, North;  Unclear
-    Korea, South  Christian 31.6% (Protestant 24%, Roman Catholic 7.6%), Buddhist 24.2%, other or unknown 0.9%, none 43.3% (2010 survey)
-    Kosovo;  Unclear
-    Latvia  Lutheran 19.6%, Orthodox 15.3%, other Christian 1%, other 0.4%, unspecified 63.7% (2006)
-    Lesotho  Christian 80%
-    Liberia  Christian 85.6%
-    Libya  Muslim (official; virtually all Sunni) 96.6%
-    Luxembourg  Roman Catholic 87%
-    Macau  Buddhist 50%, Roman Catholic 15%, none or other 35% (1997 est.)
-    Malawi  Christian 82.6%
-    Maldives;  Unclear
-    Mali  Muslim 94.8%
-    Malta  Roman Catholic (official) more than 90% (2011 est.)
-    Mauritania  Muslim (official) 100%
-    Mauritius  Hindu 48.5%, Roman Catholic 26.3%, Muslim 17.3%, other Christian 6.4%, other 0.6%, none 0.7%, unspecified 0.1% (2011 est.)
-    Mexico  Roman Catholic 82.7%
-    Moldova  Orthodox 93.3%
-    Monaco  Roman Catholic 90% (official)
-    Morocco  Muslim 99% (official; virtually all Sunni
-    Mozambique  Roman Catholic 28.4%, Muslim 17.9%, Zionist Christian 15.5%, Protestant 12.2% (includes Pentecostal 10.9% and Anglican 1.3%), other 6.7%, none 18.7%, unspecified 0.7% (2007 est.)
-    Namibia  Christian 80% to 90% (at least 50% Lutheran)
-    Nepal  Hindu 81.3%
-    Netherlands  Roman Catholic 28%, Protestant 19% (includes Dutch Reformed 9%, Protestant Church of The Netherlands, 7%, Calvinist 3%), other 11% (includes about 5% Muslim and lesser numbers of Hindu, Buddhist, Jehovah's Witness, and Orthodox), none 42% (2009 est.)
-    New Zealand  Christian 44.3% (Catholic 11.6%, Anglican 10.8%, Presbyterian and Congregational 7.8%, Methodist, 2.4%, Pentecostal 1.8%, other 9.9%), Hindu 2.1%, Buddhist 1.4%, Maori Christian 1.3%, Islam 1.1%, other religion 1.4% (includes Judaism, Spiritualism and New Age religions, Baha'i, Asian religions other than Buddhism), no religion 38.5%, not stated or unidentified 8.2%, objected to answering 4.1%
-    Niger  Muslim 80%
-    Nigeria  Muslim 50%, Christian 40%, indigenous beliefs 10%
-    Norfolk Island  Protestant 49.6% (Anglican 31.8%, Uniting Church in Australia 10.6%, Seventh-Day Adventist 3.2%), Roman Catholic 11.7%, other 8.6%, none 23.5%, unspecified 6.6% (2011 est.)
-    Northern Mariana Islands;  Unclear
-    Norway  Church of Norway (Evangelical Lutheran - official) 82.1%
-    Oman  Muslim (official; majority are Ibadhi
-    Pakistan  Muslim (official) 96.4% (Sunni 85-90%
-    Palau  Roman Catholic 49.4%, Protestant 30.9% (includes Protestant (general) 23.1%, Seventh Day Adventist 5.3%, and other Protestant 2.5%), Modekngei 8.7% (indigenous to Palau), Jehovah's Witnesses 1.1%, other 8.8%, none or unspecified 1.1% (2005 est.)
-    Panama  Roman Catholic 85%
-    Papua New Guinea  Roman Catholic 27%, Protestant 69.4% (Evangelical Lutheran 19.5%, United Church 11.5%, Seventh-Day Adventist 10%, Pentecostal 8.6%, Evangelical Alliance 5.2%, Anglican 3.2%, Baptist 2.5%, other Protestant 8.9%), Baha'i 0.3%, indigenous beliefs and other 3.3% (2000 census)
-    Paraguay  Roman Catholic 89.6%
-    Peru  Roman Catholic 81.3%
-    Philippines  Catholic 82.9% (Roman Catholic 80.9%
-    Pitcairn Islands  Seventh-Day Adventist 100%
-    Poland  Catholic 87.2% (includes Roman Catholic 86.9% and Greek Catholic
-    Portugal  Roman Catholic 81%
-    Puerto Rico  Roman Catholic 85%
-    Romania  Eastern Orthodox (including all sub-denominations) 81.9%
-    Russia  Russian Orthodox 15-20%, Muslim 10-15%, other Christian 2% (2006 est.)
-    Rwanda  Roman Catholic 49.5%, Protestant 39.4% (includes Adventist 12.2% and other Protestant 27.2%), other Christian 4.5%, Muslim 1.8%, animist 0.1%, other 0.6%, none 3.6% (2001), unspecified 0.5% (2002 est.)
-    Saint Barthelemy;  Unclear
-    Saint Helena, Ascension, and Tristan da Cunha;  Unclear
-    Saint Kitts and Nevis;  Unclear
-    Saint Martin;  Unclear
-    Saint Pierre and Miquelon  Roman Catholic 99%
-    San Marino;  Unclear
-    Saudi Arabia  Muslim (official; citizens are 85-90% Sunni and 10-15% Shia)
-    Senegal  Muslim 94% (most adhere to one of the four main Sufi brotherhoods)
-    Serbia  Serbian Orthodox 84.6%
-    Singapore  Buddhist 33.9%, Muslim 14.3%, Taoist 11.3%, Catholic 7.1%, Hindu 5.2%, other Christian 11%, other 0.7%, none 16.4% (2010 est.)
-    Sint Maarten  Roman Catholic 39%, Protestant 44.8% (Pentecostal 11.6%, Seventh-Day Adventist 6.2%, other Protestant 27%), none 6.7%, other 5.4%, Jewish 3.4%, not reported 0.7% (2001 census)
-    Somalia;  Unclear
-    South Africa  Protestant 36.6% (Zionist Christian 11.1%, Pentecostal/Charismatic 8.2%, Methodist 6.8%, Dutch Reformed 6.7%, Anglican 3.8%), Catholic 7.1%, Muslim 1.5%, other Christian 36%, other 2.3%, unspecified 1.4%, none 15.1% (2001 census)
-    South Sudan;  Unclear
-    Spain  Roman Catholic 94%
-    Sudan;  Unclear
-    Suriname  Hindu 27.4%, Protestant 25.2% (predominantly Moravian), Roman Catholic 22.8%, Muslim 19.6%, indigenous beliefs 5%
-    Swaziland  Zionist 40% (a blend of Christianity and indigenous ancestral worship), Roman Catholic 20%, Muslim 10%, other (includes Anglican, Baha'i, Methodist, Mormon, Jewish) 30%
-    Sweden  Lutheran 87%
-    Switzerland  Roman Catholic 38.2%, Protestant 26.9%, Muslim 4.9%, other Christian 5.7%, other 1.6%, none 21.4%, unspecified 1.3% (2012 est.)
-    Syria  Muslim 87% (official; includes Sunni 74% and Alawi
-    Taiwan  mixture of Buddhist and Taoist 93%
-    Tajikistan  Sunni Muslim 85%
-    Tanzania  mainland - Christian 30%, Muslim 35%, indigenous beliefs 35%; Zanzibar - more than 99% Muslim
-    Thailand  Buddhist (official) 93.6%
-    Timor-Leste  Roman Catholic 96.9%
-    Togo  Christian 29%, Muslim 20%, indigenous beliefs 51%
-    Trinidad and Tobago  Protestant 32.1% (Pentecostal/Evangelical/Full Gospel 12%, Baptist 6.9%, Anglican 5.7%, Seventh-Day Adventist 4.1%, Presbyterian/Congretational 2.5, other Protestant .9), Roman Catholic 21.6%, Hindu 18.2%, Muslim 5%, Jehovah's Witness 1.5%, other 8.4%, none 2.2%, unspecified 11.1% (2011 est.)
-    Tunisia  Muslim (official; Sunni) 99.1%
-    Turkey  Muslim 99.8% (mostly Sunni)
-    Turkmenistan  Muslim 89%
-    Tuvalu  Protestant 98.4% (Church of Tuvalu (Congregationalist) 97%
-    Uganda  Roman Catholic 41.9%, Protestant 42% (Anglican 35.9%, Pentecostal 4.6%, Seventh-Day Adventist 1.5%), Muslim 12.1%, other 3.1%, none 0.9% (2002 census)
-    Ukraine  Orthodox (includes Ukrainian Autocephalous Orthodox (UAOC), Ukrainian Orthodox - Kyiv Patriarchate (UOC-KP), Ukrainian Orthodox - Moscow Patriarchate (UOC-MP), Ukrainian Greek Catholic, Roman Catholic, Protestant, Muslim, Jewish
-    Uruguay  Roman Catholic 47.1%, non-Catholic Christians 11.1%, nondenominational 23.2%, Jewish 0.3%, atheist or agnostic 17.2%, other 1.1% (2006)
-    Uzbekistan  Muslim 88% (mostly Sunni)
-    Venezuela  nominally Roman Catholic 96%
-    Vietnam  Buddhist 9.3%, Catholic 6.7%, Hoa Hao 1.5%, Cao Dai 1.1%, Protestant 0.5%, Muslim 0.1%, none 80.8% (1999 census)
-    Wallis and Futuna  Roman Catholic 99%
-    West Bank  Muslim 80.0 - 85.0% (predominantly Sunni), Jewish 12.0 - 14.0%, Christian 1.0 - 2.5% (mainly Greek Orthodox), other, unaffiliated, unspecified               note: the proportion of Christians continues to fall mainly as a result of the growth of the Muslim population but also because of the migration and the declining birth rate of the Christian population (2012 est.)
-    Western Sahara;  Unclear
-    World  Christian 33.39% (of which Roman Catholic 16.85%, Protestant 6.15%, Orthodox 3.96%, Anglican 1.26%), Muslim 22.74%, Hindu 13.8%, Buddhist 6.77%, Sikh 0.35%, Jewish 0.22%, Baha'i 0.11%, other religions 10.95%, non-religious 9.66%, atheists 2.01% (2010 est.)
-    Yemen  Muslim 99.1% (official; virtually all are citizens
-    Zimbabwe  syncretic (part Christian, part indigenous beliefs) 50%, Christian 25%, indigenous beliefs 24%, Muslim and other 1%
+	    Afghanistan  Sunni Muslim 80%
+	    Algeria  Muslim (official; predominantly Sunni) 99%, other (includes Christian and Jewish)
+	    American Samoa  Christian Congregationalist 50%, Roman Catholic 20%, Protestant and other 30%
+	    Andorra  Roman Catholic (predominant)
+	    Angola  indigenous beliefs 47%, Roman Catholic 38%, Protestant 15% (1998 est.)
+	    Anguilla  Protestant 83.1% (Anglican 29%
+	    Argentina  nominally Roman Catholic 92% (less than 20% practicing)
+	    Armenia  Armenian Apostolic 92.6%
+	    Australia  Protestant 28.8% (Anglican 17.1%, Uniting Church 5.0%, Presbyterian and Reformed 2.8%, Baptist, 1.6%, Lutheran 1.2%, Pentecostal 1.1%), Catholic 25.3%, Eastern Orthodox 2.6%, other Christian 4.5%, Buddhist 2.5%, Muslim 2.2%, Hindu 1.3%, other 8.4%, unspecified 2.2%, none 22.3%
+	    Azerbaijan  Muslim 93.4%
+	    Bangladesh  Muslim 89.5%
+	    Belarus  Eastern Orthodox 80%
+	    Belize  Roman Catholic 39.3%, Pentacostal 8.3%, Seventh Day Adventist 5.3%, Anglican 4.5%, Mennonite 3.7%, Baptist 3.5%, Methodist 2.8%, Nazarene 2.8%, Jehovah's Witnesses 1.6%, other 9.9% (includes Baha'i Faith, Buddhism, Hinduism, Islam, and Mormon), other (unknown) 3.1%, none 15.2% (2010 census)
+	    Benin  Catholic 27.1%, Muslim 24.4%, Vodoun 17.3%, Protestant 10.4% (Celestial 5%, Methodist 3.2%, other Protestant 2.2%), other Christian 5.3%, other 15.5% (2002 census)
+	    Bermuda  Protestant 46.1% (Anglican 15.8%, African Methodist Episcopal 8.6%, Seventh Day Adventist 6.7, Pentecostal 3.5%, Methodist 2.7%, Presbyterian 2.0 %, Church of God 1.6%, Baptist 1.2%, Salvation Army 1.1%, Bretheren 1.0%, other Protestant 2.0%), Roman Catholic 14.5%, Jehovah's Witness 1.3%, other Christian 9.1%, Muslim 1%, other 3.9%, none 17.8%, unspecified 6.2% (2010 est.)
+	    Bolivia  Roman Catholic 95%
+	    Bosnia and Herzegovina  Muslim 40%, Orthodox 31%, Roman Catholic 15%, other 14%
+	    British Virgin Islands  Protestant 84% (Methodist 33%
+	    Burma  Buddhist 89%
+	    Cambodia  Buddhist (official) 96.9%
+	    Cameroon  indigenous beliefs 40%, Christian 40%, Muslim 20%
+	    Canada  Catholic 40.6% (includes Roman Catholic 38.8%, Orthodox 1.6%, other Catholic .2%), Protestant 20.3% (includes United Church 6.1%, Anglican 5%, Baptist 1.9%, Lutheran 1.5%, Pentecostal 1.5%, Presbyterian 1.4%, other Protestant 2.9%), other Christian 6.3%, Muslim 3.2%, Hindu 1.5%, Sikh 1.4%, Buddhist 1.1%, Jewish 1%, other 0.6%, none 23.9% (2011 est.)
+	    Central African Republic  indigenous beliefs 35%, Protestant 25%, Roman Catholic 25%, Muslim 15%
+	    China  Buddhist 18.2%, Christian 5.1%, Muslim 1.8%, folk religion 21.9%, Hindu
+	    Christmas Island  Buddhist 36%, Muslim 25%, Christian 18%, other 21% (1997)
+	    Cocos (Keeling) Islands  Sunni Muslim 80%
+	    Colombia  Roman Catholic 90%
+	    Comoros  Sunni Muslim 98%
+	    Congo, Democratic Republic of the  Roman Catholic 50%, Protestant 20%, Kimbanguist 10%, Muslim 10%, other (includes syncretic sects and indigenous beliefs) 10%
+	    Congo, Republic of the  Roman Catholic 33.1%, Awakening Churches/Christian Revival 22.3%, Protestant 19.9%, Salutiste 2.2%, Muslim 1.6%, Kimbanguiste 1.5%, other 8.1%, none 11.3% (2010 est.)
+	    Cote d'Ivoire  Muslim 38.6%, Christian 32.8%, indigenous 11.9%, none 16.7% (2008 est.)
+	    Croatia  Roman Catholic 86.3%
+	    Cuba  nominally Roman Catholic 85%
+	    Czech Republic  Roman Catholic 10.4%, Protestant (includes Czech Brethren and Hussite) 1.1%, other and unspecified 54%, none 34.5% (2011 est.)
+	    Denmark  Evangelical Lutheran (official) 80%
+	    Djibouti  Muslim 94%
+	    Dominican Republic  Roman Catholic 95%
+	    Ecuador  Roman Catholic 95%
+	    Egypt  Muslim (predominantly Sunni) 90%, Christian (majority Coptic Orthodox, other Christians include Armenian Apostolic, Catholic, Maronite, Orthodox, and Anglican) 10% (2012 est.)
+	    Equatorial Guinea  nominally Christian and predominantly Roman Catholic, pagan practices
+	    Eritrea;  Unclear
+	    Estonia  Lutheran 9.9%, Orthodox 16.2%, other Christian (including Methodist, Seventh-Day Adventist, Roman Catholic, Pentecostal) 2.2%, other 0.9%, none 54.1%, unspecified 16.7% (2011 est.)
+	    Ethiopia  Ethiopian Orthodox 43.5%, Muslim 33.9%, Protestant 18.5%, traditional 2.7%, Catholic 0.7%, other 0.6% (2007 est.)
+	    European Union;  Unclear
+	    Faroe Islands  Evangelical Lutheran 83.8%
+	    Fiji  Protestant 45% (Methodist 34.6%, Assembly of God 5.7%, Seventh Day Adventist 3.9%, and Anglican 0.8%), Hindu 27.9%, other Christian 10.4%, Roman Catholic 9.1%, Muslim 6.3%, Sikh 0.3%, other 0.3%, none 0.8% (2007 est.)
+	    France  Roman Catholic 83%-88%
+	    Gambia, The  Muslim 90%
+	    Gaza Strip  Muslim 98.0 - 99.0% (predominantly Sunni), Christian               note: dismantlement of Israeli settlements was completed in September 2005; Gaza has had no Jewish population since then (2012 est.)
+	    Georgia  Orthodox Christian (official) 83.9%
+	    Germany  Protestant 34%, Roman Catholic 34%, Muslim 3.7%, unaffiliated or other 28.3%
+	    Greece  Greek Orthodox (official) 98%
+	    Greenland;  Unclear
+	    Guam  Roman Catholic 85%
+	    Guatemala;  Unclear
+	    Guernsey;  Unclear
+	    Guinea  Muslim 85%
+	    Guinea-Bissau  Muslim 50%, indigenous beliefs 40%, Christian 10%
+	    Guyana  Protestant 30.5% (Pentecostal 16.9%, Anglican 6.9%, Seventh Day Adventist 5%, Methodist 1.7%), Hindu 28.4%, Roman Catholic 8.1%, Muslim 7.2%, Jehovah's Witnesses 1.1%, other Christian 17.7%, other 1.9%, none 4.3%, unspecified 0.9% (2002 est.)
+	    Haiti  Roman Catholic 80%
+	    Holy See (Vatican City);  Unclear
+	    Honduras  Roman Catholic 97%
+	    Hong Kong  eclectic mixture of local religions 90%
+	    Hungary  Roman Catholic 37.2%, Calvinist 11.6%, Lutheran 2.2%, Greek Catholic 1.8%, other 1.9%, none 18.2%, unspecified 27.2% (2011 est.)
+	    India  Hindu 80.5%
+	    Indonesia  Muslim 87.2%
+	    Iran  Muslim (official) 99.4% (Shia 90-95%
+	    Iraq  Muslim (official) 99% (Shia 60%-65%
+	    Ireland  Roman Catholic 84.7%
+	    Isle of Man;  Unclear
+	    Italy  Christian 80% (overwhelmingly Roman Catholic with very small groups of Jehovah's Witnesses and Protestants)
+	    Japan  Shintoism 83.9%
+	    Jersey;  Unclear
+	    Jordan  Muslim 97.2% (official; predominantly Sunni), Christian 2.2% (majority Greek Orthodox, but some Greek and Roman Catholics, Syrian Orthodox, Coptic Orthodox, Armenian Orthodox, and Protestant denominations), Buddhist 0.4%, Hindu 0.1%, Jewish
+	    Kenya  Christian 82.5% (Protestant 47.4%
+	    Korea, North;  Unclear
+	    Korea, South  Christian 31.6% (Protestant 24%, Roman Catholic 7.6%), Buddhist 24.2%, other or unknown 0.9%, none 43.3% (2010 survey)
+	    Kosovo;  Unclear
+	    Latvia  Lutheran 19.6%, Orthodox 15.3%, other Christian 1%, other 0.4%, unspecified 63.7% (2006)
+	    Lesotho  Christian 80%
+	    Liberia  Christian 85.6%
+	    Libya  Muslim (official; virtually all Sunni) 96.6%
+	    Luxembourg  Roman Catholic 87%
+	    Macau  Buddhist 50%, Roman Catholic 15%, none or other 35% (1997 est.)
+	    Malawi  Christian 82.6%
+	    Maldives;  Unclear
+	    Mali  Muslim 94.8%
+	    Malta  Roman Catholic (official) more than 90% (2011 est.)
+	    Mauritania  Muslim (official) 100%
+	    Mauritius  Hindu 48.5%, Roman Catholic 26.3%, Muslim 17.3%, other Christian 6.4%, other 0.6%, none 0.7%, unspecified 0.1% (2011 est.)
+	    Mexico  Roman Catholic 82.7%
+	    Moldova  Orthodox 93.3%
+	    Monaco  Roman Catholic 90% (official)
+	    Morocco  Muslim 99% (official; virtually all Sunni
+	    Mozambique  Roman Catholic 28.4%, Muslim 17.9%, Zionist Christian 15.5%, Protestant 12.2% (includes Pentecostal 10.9% and Anglican 1.3%), other 6.7%, none 18.7%, unspecified 0.7% (2007 est.)
+	    Namibia  Christian 80% to 90% (at least 50% Lutheran)
+	    Nepal  Hindu 81.3%
+	    Netherlands  Roman Catholic 28%, Protestant 19% (includes Dutch Reformed 9%, Protestant Church of The Netherlands, 7%, Calvinist 3%), other 11% (includes about 5% Muslim and lesser numbers of Hindu, Buddhist, Jehovah's Witness, and Orthodox), none 42% (2009 est.)
+	    New Zealand  Christian 44.3% (Catholic 11.6%, Anglican 10.8%, Presbyterian and Congregational 7.8%, Methodist, 2.4%, Pentecostal 1.8%, other 9.9%), Hindu 2.1%, Buddhist 1.4%, Maori Christian 1.3%, Islam 1.1%, other religion 1.4% (includes Judaism, Spiritualism and New Age religions, Baha'i, Asian religions other than Buddhism), no religion 38.5%, not stated or unidentified 8.2%, objected to answering 4.1%
+	    Niger  Muslim 80%
+	    Nigeria  Muslim 50%, Christian 40%, indigenous beliefs 10%
+	    Norfolk Island  Protestant 49.6% (Anglican 31.8%, Uniting Church in Australia 10.6%, Seventh-Day Adventist 3.2%), Roman Catholic 11.7%, other 8.6%, none 23.5%, unspecified 6.6% (2011 est.)
+	    Northern Mariana Islands;  Unclear
+	    Norway  Church of Norway (Evangelical Lutheran - official) 82.1%
+	    Oman  Muslim (official; majority are Ibadhi
+	    Pakistan  Muslim (official) 96.4% (Sunni 85-90%
+	    Palau  Roman Catholic 49.4%, Protestant 30.9% (includes Protestant (general) 23.1%, Seventh Day Adventist 5.3%, and other Protestant 2.5%), Modekngei 8.7% (indigenous to Palau), Jehovah's Witnesses 1.1%, other 8.8%, none or unspecified 1.1% (2005 est.)
+	    Panama  Roman Catholic 85%
+	    Papua New Guinea  Roman Catholic 27%, Protestant 69.4% (Evangelical Lutheran 19.5%, United Church 11.5%, Seventh-Day Adventist 10%, Pentecostal 8.6%, Evangelical Alliance 5.2%, Anglican 3.2%, Baptist 2.5%, other Protestant 8.9%), Baha'i 0.3%, indigenous beliefs and other 3.3% (2000 census)
+	    Paraguay  Roman Catholic 89.6%
+	    Peru  Roman Catholic 81.3%
+	    Philippines  Catholic 82.9% (Roman Catholic 80.9%
+	    Pitcairn Islands  Seventh-Day Adventist 100%
+	    Poland  Catholic 87.2% (includes Roman Catholic 86.9% and Greek Catholic
+	    Portugal  Roman Catholic 81%
+	    Puerto Rico  Roman Catholic 85%
+	    Romania  Eastern Orthodox (including all sub-denominations) 81.9%
+	    Russia  Russian Orthodox 15-20%, Muslim 10-15%, other Christian 2% (2006 est.)
+	    Rwanda  Roman Catholic 49.5%, Protestant 39.4% (includes Adventist 12.2% and other Protestant 27.2%), other Christian 4.5%, Muslim 1.8%, animist 0.1%, other 0.6%, none 3.6% (2001), unspecified 0.5% (2002 est.)
+	    Saint Barthelemy;  Unclear
+	    Saint Helena, Ascension, and Tristan da Cunha;  Unclear
+	    Saint Kitts and Nevis;  Unclear
+	    Saint Martin;  Unclear
+	    Saint Pierre and Miquelon  Roman Catholic 99%
+	    San Marino;  Unclear
+	    Saudi Arabia  Muslim (official; citizens are 85-90% Sunni and 10-15% Shia)
+	    Senegal  Muslim 94% (most adhere to one of the four main Sufi brotherhoods)
+	    Serbia  Serbian Orthodox 84.6%
+	    Singapore  Buddhist 33.9%, Muslim 14.3%, Taoist 11.3%, Catholic 7.1%, Hindu 5.2%, other Christian 11%, other 0.7%, none 16.4% (2010 est.)
+	    Sint Maarten  Roman Catholic 39%, Protestant 44.8% (Pentecostal 11.6%, Seventh-Day Adventist 6.2%, other Protestant 27%), none 6.7%, other 5.4%, Jewish 3.4%, not reported 0.7% (2001 census)
+	    Somalia;  Unclear
+	    South Africa  Protestant 36.6% (Zionist Christian 11.1%, Pentecostal/Charismatic 8.2%, Methodist 6.8%, Dutch Reformed 6.7%, Anglican 3.8%), Catholic 7.1%, Muslim 1.5%, other Christian 36%, other 2.3%, unspecified 1.4%, none 15.1% (2001 census)
+	    South Sudan;  Unclear
+	    Spain  Roman Catholic 94%
+	    Sudan;  Unclear
+	    Suriname  Hindu 27.4%, Protestant 25.2% (predominantly Moravian), Roman Catholic 22.8%, Muslim 19.6%, indigenous beliefs 5%
+	    Swaziland  Zionist 40% (a blend of Christianity and indigenous ancestral worship), Roman Catholic 20%, Muslim 10%, other (includes Anglican, Baha'i, Methodist, Mormon, Jewish) 30%
+	    Sweden  Lutheran 87%
+	    Switzerland  Roman Catholic 38.2%, Protestant 26.9%, Muslim 4.9%, other Christian 5.7%, other 1.6%, none 21.4%, unspecified 1.3% (2012 est.)
+	    Syria  Muslim 87% (official; includes Sunni 74% and Alawi
+	    Taiwan  mixture of Buddhist and Taoist 93%
+	    Tajikistan  Sunni Muslim 85%
+	    Tanzania  mainland - Christian 30%, Muslim 35%, indigenous beliefs 35%; Zanzibar - more than 99% Muslim
+	    Thailand  Buddhist (official) 93.6%
+	    Timor-Leste  Roman Catholic 96.9%
+	    Togo  Christian 29%, Muslim 20%, indigenous beliefs 51%
+	    Trinidad and Tobago  Protestant 32.1% (Pentecostal/Evangelical/Full Gospel 12%, Baptist 6.9%, Anglican 5.7%, Seventh-Day Adventist 4.1%, Presbyterian/Congretational 2.5, other Protestant .9), Roman Catholic 21.6%, Hindu 18.2%, Muslim 5%, Jehovah's Witness 1.5%, other 8.4%, none 2.2%, unspecified 11.1% (2011 est.)
+	    Tunisia  Muslim (official; Sunni) 99.1%
+	    Turkey  Muslim 99.8% (mostly Sunni)
+	    Turkmenistan  Muslim 89%
+	    Tuvalu  Protestant 98.4% (Church of Tuvalu (Congregationalist) 97%
+	    Uganda  Roman Catholic 41.9%, Protestant 42% (Anglican 35.9%, Pentecostal 4.6%, Seventh-Day Adventist 1.5%), Muslim 12.1%, other 3.1%, none 0.9% (2002 census)
+	    Ukraine  Orthodox (includes Ukrainian Autocephalous Orthodox (UAOC), Ukrainian Orthodox - Kyiv Patriarchate (UOC-KP), Ukrainian Orthodox - Moscow Patriarchate (UOC-MP), Ukrainian Greek Catholic, Roman Catholic, Protestant, Muslim, Jewish
+	    Uruguay  Roman Catholic 47.1%, non-Catholic Christians 11.1%, nondenominational 23.2%, Jewish 0.3%, atheist or agnostic 17.2%, other 1.1% (2006)
+	    Uzbekistan  Muslim 88% (mostly Sunni)
+	    Venezuela  nominally Roman Catholic 96%
+	    Vietnam  Buddhist 9.3%, Catholic 6.7%, Hoa Hao 1.5%, Cao Dai 1.1%, Protestant 0.5%, Muslim 0.1%, none 80.8% (1999 census)
+	    Wallis and Futuna  Roman Catholic 99%
+	    West Bank  Muslim 80.0 - 85.0% (predominantly Sunni), Jewish 12.0 - 14.0%, Christian 1.0 - 2.5% (mainly Greek Orthodox), other, unaffiliated, unspecified               note: the proportion of Christians continues to fall mainly as a result of the growth of the Muslim population but also because of the migration and the declining birth rate of the Christian population (2012 est.)
+	    Western Sahara;  Unclear
+	    World  Christian 33.39% (of which Roman Catholic 16.85%, Protestant 6.15%, Orthodox 3.96%, Anglican 1.26%), Muslim 22.74%, Hindu 13.8%, Buddhist 6.77%, Sikh 0.35%, Jewish 0.22%, Baha'i 0.11%, other religions 10.95%, non-religious 9.66%, atheists 2.01% (2010 est.)
+	    Yemen  Muslim 99.1% (official; virtually all are citizens
+	    Zimbabwe  syncretic (part Christian, part indigenous beliefs) 50%, Christian 25%, indigenous beliefs 24%, Muslim and other 1%
 	
-	7. List any country that is entirely landlocked by another country
+7. List any country that is entirely landlocked by another country
 	Based on the definition of landlocked country, I first check coastline information listed on page https://www.cia.gov/library/publications/the-world-factbook/fields/2060.html. It will show whether a country has coastline. If not, landlock will appear, if so, distance will appear. After picking countries with "landlock" label, I make a second search on page https://www.cia.gov/library/publications/the-world-factbook/fields/2096.html, which provides detail information about land boundaries, thus adjacent countries could be found. My strategy is try to get the essential information at one time, then process most of data offline. To check accuracy, I first output landlocked country with number of adjacent countries, and it turns out pretty good. Some of results are here:
 	Afghanistan, number of adjacent:6
 	Andorra, number of adjacent:2
@@ -291,7 +285,7 @@ Part II
 	
 
 	
-	8. (Wild Card) List the top 5 countries that have the largest percentage of internet users. 
+8. (Wild Card) List the top 5 countries that have the largest percentage of internet users. 
 	I try to come up with a question that is at a similar level of Q5, using the figure of population and internet users in each country. Both information are parsed during the first round of parsing through each page. Calculation and sorting is done in function parse_internet. It's interesting to find out that there are actually countires/regions don't have internet users, and that Iceland and Norway(in Northern Europe) have the largest percentage in internet users.
 	
 	Results:
@@ -314,13 +308,14 @@ Part II
 	It'll generate an html page containing the plot within the same directory as ruby file. The result does not show significant relevance, but as internet population percentage goes up, electricity per capital indeed slightly raises. (I turn the y-axis to log mode) It's fun trying to visualize figures and find relevance in between. Although scatter plot is the very basic in plotting analysis, it's always interesting to test in a new language.
 		
 
-Part II EC	
-	
-	1. The ruby program is stored as hw2_EC.rb
-	Algorithm: 
-	In order to find as many countries as possible within a 10*10 degrees square, my brief mechanism is to first form a hash containing the mapping information of countries to their coordinates(including those with multiple territories, which bring in more difficulties).	Several steps: locate country name, decide whether the text contain multiple coordinates, use regex to match the information, parse down and store in hash_point. Here for coordinates, the precision is 1. X-Y axis is built up by defining equator as x-axis, 0 degree longitude as y-axis, N+ S- W- E+. 
-	 Then, I manage to map all the coordinates information into a 180*360 dimension matrix (in array form). Thus each node of the matrix will contain the counts of different coordinates(some node may contain more than 1 count). The next step is to sum up every 10 * 10 matrices within the matrix and store the sum value in the position of [0,0] in each 10*10 small matrix. 
-	 Simply using array.each_with_index.max, I could find the largest value/count, then trace back to its boundary coordinates in longitude and latitude. Finally, the program will output the maximum number of countries found, along with each country within the boundary and its coordinates.
+### Extra Credit
+1. The ruby program is stored as hw2_EC.rb
+
+> Algorithm: 
+> In order to find as many countries as possible within a 10*10 degrees square, my brief mechanism is to first form a hash containing the mapping information of countries to their coordinates(including those with multiple territories, which bring in more difficulties).	Several steps: locate country name, decide whether the text contain multiple coordinates, use regex to match the information, parse down and store in hash_point. Here for coordinates, the precision is 1. X-Y axis is built up by defining equator as x-axis, 0 degree longitude as y-axis, N+ S- W- E+. 
+> Then, I manage to map all the coordinates information into a 180*360 dimension matrix (in array form). Thus each node of the matrix will contain the counts of different coordinates(some node may contain more than 1 count). The next step is to sum up every 10 * 10 matrices within the matrix and store the sum value in the position of [0,0] in each 10*10 small matrix. 
+> Simply using array.each_with_index.max, I could find the largest value/count, then trace back to its boundary coordinates in longitude and latitude. Finally, the program will output the maximum number of countries found, along with each country within the boundary and its coordinates.
+
 	 Results:
 	 Longitude: 70 W ~ 60 W;  Latitude: 8 N ~ 18 N
 	 $$$$$$$$$$$$$$$$$$$$$$$$$$$$
@@ -370,9 +365,9 @@ Part II EC
 	 Thus, the number of all countries within 170E ~ 170W (90S ~ 90N) is 13, far smaller than the maximum count we find above between Longitude: 70 W ~ 60 W;  Latitude: 8 N ~ 18 N. Therefore, the algorithm generates a thorough result.
 	
 	
-	2. I'd have come up with similar parsing and calculation tasks, but that'd be similar tasks like above. However, just as I mentioned in the beginning, CIA is using shockware flash in region pages such as https://www.cia.gov/library/publications/the-world-factbook/wfbExt/region_afr.html, which is totally not cool, making it complex to go over "Map Reference" label of each country. Thus, my question would be: 
+2. I'd have come up with similar parsing and calculation tasks, but that'd be similar tasks like above. However, just as I mentioned in the beginning, CIA is using shockware flash in region pages such as https://www.cia.gov/library/publications/the-world-factbook/wfbExt/region_afr.html, which is totally not cool, making it complex to go over "Map Reference" label of each country. Thus, my question would be: 
 
-	Q: how to parse information from *.swf embedded in the html page?
+Q: how to parse information from *.swf embedded in the html page?
 	A: After some time googling this topic, I figure out a way to get contents of *.swf file embedded in html quickly. I use firebug in Firefox to view source info and monitor interaction between browser and website, nokogiri gem and Ruby language is used to parse information from XML file. The following steps might seem a little bit tricky, but it definitely works.
 	First let's say open the webpage https://www.cia.gov/library/publications/the-world-factbook/wfbExt/region_afr.html, which lists every country in Africa within the "annoying" flash. Then, let's enable firebug, open Net monitor, and look through the list that contains every file you've cached to load the html page. Under "all" catelogue, you should see a bunch of jpg, js, xml etc., also you should see GET afr.swf. The flash file is 176.3 kb, it's mapping the region information and country name in visual form. Let's look further, right click the link and choose open in a new tab, a new webpage of https://www.cia.gov/library/publications/the-world-factbook/wfbExt/afr.swf will occur. Now we continue to use firebug to check what file the browser is currently using, and under HTML catalogue we could definitely find GET sourceXML.xml. That's the exact thing connected to afr.swf, and is also the central mapping bank for all region flash files. Right click on the link to open in a new tab, then we have a clear list of Country Name, mapping url(abbr.), and region specification as follows.
 	
